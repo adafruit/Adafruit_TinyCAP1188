@@ -18,27 +18,34 @@
 #include <TinyCAP1188.h>
 
 // Reset Pin is used for I2C
-#define CAP1188_RESET  9
+#define CAP1188_RESET  1
 
-// For I2C, connect SDA to your Arduino's SDA pin, SCL to SCL pin
-// On UNO/Duemilanove/etc, SDA == Analog 4, SCL == Analog 5
-// On Leonardo/Micro, SDA == Digital 2, SCL == Digital 3
-// On Mega/ADK/Due, SDA == Digital 20, SCL == Digital 21
-
-// Use I2C, no reset pin!
+// For I2C, connect SDA to trinket/Gemma pin 0, SCL to Trinket/Gemma pin 2
+// Use I2C with no reset pin
 TinyCAP1188 cap = TinyCAP1188();
 
 // Or...Use I2C, with reset pin
 //TinyCAP1188 cap = TinyCAP1188(CAP1188_RESET);
 
+//pin 1 is red led on Trinket
+#define ledPin 1
 
 void setup() {
 
-  // Initialize the sensor, if using i2c you can pass in the i2c address
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW); //turn led off for 1 second
+  delay(1000);
+  
+  // Initialize the sensor, you can pass in the i2c address or leave it at the default
   // if (!cap.begin(0x28)) {
   if (!cap.begin()) {
     while (1);
   }
+
+  //if CAP1188 initialized OK, turn led on for 2 seconds
+  digitalWrite(ledPin, HIGH);
+  delay(2000);
+  digitalWrite(ledPin, LOW);
 }
 
 void loop() {
@@ -46,14 +53,14 @@ void loop() {
 
   if (touched == 0) {
     // No touch detected
+    digitalWrite(ledPin, LOW);  //turn led off
     return;
   }
   
   for (uint8_t i=0; i<8; i++) {
     if (touched & (1 << i)) {
-      //do something here
+      digitalWrite(ledPin, HIGH);  //turn led on.
     }
   }
   delay(50);
 }
-
